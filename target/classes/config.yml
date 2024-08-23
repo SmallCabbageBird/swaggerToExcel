@@ -1,0 +1,10 @@
+#swaggerJson输入文件的路径
+swaggerJsonPath: C://Users/Administrator/Desktop/bps测试/bps接口.json
+#excel输出文件的路径
+excelPath: D://bps接口.xlsx
+#目前只实现了swagger文件中接口的path、method、summary输出,如需增加其他字段输出则在源码的基础上拓展代码实现即可。
+#下面用以配置path、method、summary列在excel中输出的列数
+columnConfig:
+  pathColumnNum: 0
+  methodColumnNum: 1
+  summaryColumnNum: 2
