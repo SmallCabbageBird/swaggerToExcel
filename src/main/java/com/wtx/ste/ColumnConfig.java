@@ -7,4 +7,5 @@ public class ColumnConfig {
     private int pathColumnNum;
     private int methodColumnNum;
     private int summaryColumnNum;
+    private int reqParamsColumnNum;
 }
