@@ -18,7 +18,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -53,6 +52,7 @@ public class App {
         createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getPathColumnNum()).setCellValue("Path");
         createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getMethodColumnNum()).setCellValue("Method");
         createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getSummaryColumnNum()).setCellValue("Summary");
+        createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getReqParamsColumnNum()).setCellValue("RequestParams");
         // 处理paths
         Paths paths = openAPI.getPaths();
         for (Map.Entry<String, PathItem> entry : paths.entrySet()) {
