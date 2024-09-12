@@ -6,6 +6,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -18,7 +19,9 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class App {
@@ -136,13 +139,19 @@ public class App {
                     } else if ("char".equals(type)) {
                         paramsMap.put(schemaEntry.getKey(), null);
                     } else if ("array".equals(type)) {
-                        paramsMap.put(schemaEntry.getKey(), new Object[0]);
-                    } else if ("object" == type) {
+                        LinkedHashMap<String, Object> subParamsMap = new LinkedHashMap<>();
+                        List<LinkedHashMap<String, Object>> newList = new ArrayList();
+                        newList.add(subParamsMap);
+                        paramsMap.put(schemaEntry.getKey(), newList);
+                        ArraySchema arraySchema = (ArraySchema) schemaEntry.getValue();
+                        parseSchema(arraySchema.getItems(), openAPI, subParamsMap);
+                    } else if ("object".equals(type)) {
                         paramsMap.put(schemaEntry.getKey(), null);
-                    }  else if (null == type) {
+                    } else if (null == type) {
                         LinkedHashMap<String, Object> subParamsMap = new LinkedHashMap<>();
                         paramsMap.put(schemaEntry.getKey(), subParamsMap);
                         parseSchema(schemaEntry.getValue(), openAPI, subParamsMap);
+
                     } else {
                         System.out.println("未识别的类型:" + type);
                     }
@@ -151,6 +160,7 @@ public class App {
         }
 
     }
+
 
     private static Cell createCommonStyleCell(Row row, int column) {
         Cell cell = row.createCell(column);
