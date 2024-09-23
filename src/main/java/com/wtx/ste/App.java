@@ -11,7 +11,9 @@ import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.tags.Tag;
 import io.swagger.v3.parser.OpenAPIV3Parser;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.yaml.snakeyaml.Yaml;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class App {
 
@@ -45,6 +48,9 @@ public class App {
         // 解析Swagger JSON
         OpenAPI openAPI = new OpenAPIV3Parser().read(CONFIG.getSwaggerJsonPath());
 
+        //转换tagMap
+        Map<String, Tag> tagMap = openAPI.getTags().stream().collect(Collectors.toMap(Tag::getName, tag -> tag));
+
         // 创建Excel工作簿
         Sheet sheet = WORK_BOOK.createSheet("接口清单");
 
@@ -56,6 +62,8 @@ public class App {
         createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getMethodColumnNum()).setCellValue("Method");
         createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getSummaryColumnNum()).setCellValue("Summary");
         createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getReqParamsColumnNum()).setCellValue("RequestParams");
+        createCommonStyleCell(headerRow, CONFIG.getColumnConfig().getCategoryColumnNum()).setCellValue("Category");
+
         // 处理paths
         Paths paths = openAPI.getPaths();
         for (Map.Entry<String, PathItem> entry : paths.entrySet()) {
@@ -68,6 +76,15 @@ public class App {
                 Operation operation = operationEntry.getValue();
                 if (operation.getSummary() != null) {
                     createCommonStyleCell(row, CONFIG.getColumnConfig().getSummaryColumnNum()).setCellValue(operation.getSummary());
+                }
+
+                if (!CollectionUtils.isEmpty(operation.getTags())) {
+                    StringBuilder sb = new StringBuilder();
+                    for (String name : operation.getTags()) {
+                        sb.append(tagMap.get(name).getDescription()).append(",");
+                    }
+                    sb.deleteCharAt(sb.length() - 1);
+                    createCommonStyleCell(row, CONFIG.getColumnConfig().getCategoryColumnNum()).setCellValue(sb.toString());
                 }
                 String reqParams = "";
                 switch (operationEntry.getKey()) {
@@ -82,6 +99,8 @@ public class App {
         sheet.autoSizeColumn(CONFIG.getColumnConfig().getMethodColumnNum());
         sheet.autoSizeColumn(CONFIG.getColumnConfig().getSummaryColumnNum());
         sheet.autoSizeColumn(CONFIG.getColumnConfig().getReqParamsColumnNum());
+        sheet.autoSizeColumn(CONFIG.getColumnConfig().getCategoryColumnNum());
+
         // 写入文件
         try (FileOutputStream outputStream = new FileOutputStream(CONFIG.getExcelPath())) {
             WORK_BOOK.write(outputStream);

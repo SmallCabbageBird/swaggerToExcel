@@ -8,4 +8,5 @@ public class ColumnConfig {
     private int methodColumnNum;
     private int summaryColumnNum;
     private int reqParamsColumnNum;
+    private int categoryColumnNum;
 }

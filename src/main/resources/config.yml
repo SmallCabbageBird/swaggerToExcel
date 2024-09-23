@@ -9,3 +9,4 @@ columnConfig:
   methodColumnNum: 1
   summaryColumnNum: 2
   reqParamsColumnNum: 3
+  categoryColumnNum: 4
